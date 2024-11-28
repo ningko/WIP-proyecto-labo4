@@ -95,7 +95,7 @@ function App() {
   }
 
   const quitarPelicula = async (id) => {
-    if (confirm(`¿Quitar ${titulo}?`)) {
+    if (confirm(`¿Quitar ${peliculas.find(p => p.id === id)?.titulo}?`)) {
       const response = await fetch(`http://localhost:3000/peliculas/${id}`, {
         method: "DELETE",
       });
@@ -109,7 +109,12 @@ function App() {
     return (
       <>
       <h1>Peliculas</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={(e) => {e.preventDefault()
+          if (peliculaId === 0) {
+            handleSubmit(e)
+          } else {
+            modificarPeliculaApi()
+          }}}>
         <label htmlFor="titulo">Título:</label>
           <input type="text" id="titulo" value={titulo} onChange={(e) => setTitulo(e.target.value)} required/>
         <label htmlFor="descripcion">Descripción:</label>
@@ -145,8 +150,8 @@ function App() {
           <li key={pelicula.id}>
             {`${pelicula.id}: ${pelicula.titulo} (${pelicula.año} - ${pelicula.director})`}
             <div className="button-container">
-            <button className="boton-editar"onClick={() => modificarPelicula(pelicula)} disabled={peliculaId !== 0}>Editar Película</button>
-            <button className="boton-eliminar"onClick={() => quitarPelicula(pelicula.id)} disabled={peliculaId !== 0}> Eliminar Película</button>
+              <button className="boton-editar" onClick={() => modificarPelicula(pelicula)}>Editar Película</button>
+              <button className="boton-eliminar" onClick={() => quitarPelicula(pelicula.id)}>Eliminar Película</button>
             </div>
           </li>
         ))}
@@ -154,5 +159,5 @@ function App() {
       </>
     );
   }
-  
+
   export default App;

@@ -6,8 +6,8 @@ const router = express.Router()
 router.get("/", async(req, res) => {
     const [peliculas] = await db.execute("SELECT * FROM peliculas")
     res.send({
-        peliculas: peliculas.map(({ id_pelicula, ...elemento }) => ({
-            id: id_pelicula,
+        peliculas: peliculas.map(({ idpelicula, ...elemento }) => ({
+            id: idpelicula,
             ...elemento
         }))
     })
@@ -17,7 +17,7 @@ router.get("/titulos", async(req, res) => {
     const [peliculas] = await db.execute("SELECT titulo FROM peliculas")
     res.send({
         peliculas: peliculas.map((elemento) => ({
-            id: elemento.id_pelicula,
+            id: elemento.idpelicula,
             ...elemento
         }))
     })
@@ -25,7 +25,7 @@ router.get("/titulos", async(req, res) => {
 
 router.get("/:id", async(req, res) => {
     const id = req.params.id
-    const sql = "SELECT * FROM peliculas WHERE id_pelicula=?"
+    const sql = "SELECT * FROM peliculas WHERE idpelicula=?"
     const [peliculas] = await db.execute(sql, [id])
 
     if (peliculas.length === 0) {
@@ -44,7 +44,7 @@ router.post("/", async(req, res) => {
     const director = req.body.director
 
     const [result] = await db.execute(
-        "INSERT INTO peliculas(titulo, descripcion, año, duracion, genero, director) VALUE(?,?,?,?,?,?)",
+        "INSERT INTO peliculas(titulo, descripcion, año, duracion, genero, director) VALUES(?,?,?,?,?,?)",
         [titulo, descripcion, año, duracion, genero, director]
     )
 
@@ -71,9 +71,9 @@ router.put("/:id", async(req, res) => {
     const director = req.body.director
 
     await db.execute(
-        "UPDATE peliculas SET titulo=?, descripcion=?, año=?, duracion=?, genero=?, directar=? WHERE id_peliculas=?"
+        "UPDATE peliculas SET titulo=?, descripcion=?, año=?, duracion=?, genero=?, director=? WHERE idpelicula=?",
         [titulo, descripcion, año, duracion, genero, director, id]
-    )
+      )
 
     res.status(201).send({
         peliculas: {
@@ -88,9 +88,9 @@ router.put("/:id", async(req, res) => {
     })
 })
 
-router.delete(":/id", async(req, res) => {
+router.delete("/:id", async(req, res) => {
     const id = req.params.id
-    await db.execute("DELETE FROM peliculas WHERE id_peliculas=?", [id])
+    await db.execute("DELETE FROM peliculas WHERE idpelicula=?", [id])
     res.send({ id: parseInt(id) })
 })
 
