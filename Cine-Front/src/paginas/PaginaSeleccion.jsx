@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react"
 import "./PaginaSeleccion.css"
+import { Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 //import { useNavigate } from "react-router-dom"
 
 function App() {
@@ -31,7 +33,8 @@ function App() {
     
     return (
       <>
-      <h1>Peliculas</h1>
+      <h1>Menú Principal</h1>
+      {/* <h1>Peliculas</h1>
       <ul>
         {peliculas.map((pelicula) => (
           <li key={pelicula.id_peliculas}>
@@ -53,7 +56,17 @@ function App() {
             <button className="boton-cerrar" onClick={cerrarOverlay}>x</button>
           </div>
         </div>
-      )}
+      )} */}
+
+      <Link to="/PaginaPeliculas">
+        <button>Peliculas</button>
+      </Link>
+      <Link to="/PaginaFunciones">
+        <button>Funciones</button>
+      </Link>
+      <Link to="/PaginaReservas">
+        <button>Entradas</button>
+      </Link>
       </>
     );
   }

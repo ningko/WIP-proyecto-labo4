@@ -28,7 +28,7 @@ function App() {
             setPassword("")
             setError("")
             
-            navigate("/peliculas")
+            navigate("/PaginaSeleccion")
         } else {
             const errorData = await response.json()
             setError(errorData.error || "Error en el inicio de sesión")

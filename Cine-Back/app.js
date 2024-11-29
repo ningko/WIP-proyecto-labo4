@@ -1,6 +1,9 @@
 import express from "express"
 import cors from "cors"
 import peliculasRouter from "./peliculas.js"
+import funcionesRouter from "./funciones.js"
+import reservasRouter from "./reservas.js"
+import asientosRouter from "./asientos.js"
 import loginRouter from "./login.js"
 import autenticacionRouter from "./autenticacion.js"
 import { conectarDB } from "./db.js"
@@ -21,6 +24,9 @@ app.get("/", (req, res) => {
 app.use("/peliculas", peliculasRouter)
 app.use("/login", loginRouter)
 app.use("/autenticacion", autenticacionRouter)
+app.use("/funciones", funcionesRouter)
+app.use("/reservas", reservasRouter)
+app.use("/asientos", asientosRouter)
 
 app.listen(port, () => {
     console.log(`App conectada en ${port}`)
