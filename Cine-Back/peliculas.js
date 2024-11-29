@@ -4,7 +4,7 @@ import { db } from "./db.js"
 const router = express.Router()
 
 router.get("/", async(req, res) => {
-    const [peliculas] = await db.execute("SELECT * FROM peliculas")
+    const [peliculas] = await db.execute("SELECT * FROM peliculas where disponible=true")
     res.send({
         peliculas: peliculas.map(({ idpelicula, ...elemento }) => ({
             id: idpelicula,
@@ -90,7 +90,7 @@ router.put("/:id", async(req, res) => {
 
 router.delete("/:id", async(req, res) => {
     const id = req.params.id
-    await db.execute("DELETE FROM peliculas WHERE idpelicula=?", [id])
+    await db.execute("UPDATE peliculas SET disponible=false WHERE idpelicula=?", [id])
     res.send({ id: parseInt(id) })
 })
 
