@@ -44,7 +44,7 @@ router.post("/", async(req, res) => {
     const director = req.body.director
 
     const [result] = await db.execute(
-        "INSERT INTO peliculas(titulo, descripcion, año, duracion, genero, director) VALUES(?,?,?,?,?,?)",
+        "INSERT INTO peliculas(titulo, descripcion, año, duracion, genero, director,disponible) VALUES(?,?,?,?,?,?,1)",
         [titulo, descripcion, año, duracion, genero, director]
     )
 
