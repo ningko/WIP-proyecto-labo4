@@ -10,27 +10,18 @@ import { Link, useNavigate } from "react-router-dom";
 
 function App() {
   const [peliculas, setPeliculas] = useState([]);
-  const [funcionSeleccionada, setFuncionSeleccionada] = useState(0)
   const [idpelicula, setIdPelicula] = useState(0);
   const [funciones, setFunciones] = useState([])
   const [funcionesFiltradas, setFuncionesFiltradas] = useState([])
   const [funcionId, setFuncionId] = useState(0)
-  const [fecha, setFecha] = useState(dayjs(Date()))
-  const [fechatxt, setFechatxt] = useState("")
-  const [horario, setHorario] = useState("")
-  const [value, setValue] = useState("Fruit")
-  const [sala, setSala] = useState(1)
   const [reservas,setReservas] = useState([])
-  const [reservasFiltradas,setReservasFiltradas] = useState([])
   const [display, setDisplay] = useState([])
   const [btnText, setBtnText] = useState([])
   const [asientos, setAsientos]=useState([])
-  const [lastOpen, setLastOpen] = useState(0)
   const [asientosDisponibles, setAsientosDisponibles] = useState([])
   const [asientosSeleccionados,setAsientosSeleccionados] = useState([])
   const [checked, setChecked] = useState([])
   const [disabled, setDisabled] = useState([])
-  const handleClick = () => setChecked(!checked)
 
   const getPeliculas = async() => {
     const response = await fetch("http://localhost:3000/peliculas")
@@ -46,7 +37,6 @@ function App() {
       const { reservas } = await response.json()
       setReservas(reservas)
       setReservasFiltradas(reservas)
-      console.log(reservas)
     }
   }
 
@@ -57,8 +47,6 @@ function App() {
       setAsientos(asientos)
       const asientosDisp = asientos.map((e)=>reservas.find((f)=>f.idasiento==e.idasiento)?"red":"black")
       setAsientosDisponibles(asientosDisp)
-      console.log(asientosDisp)
-      console.log(reservas)
     }
   }
 
@@ -90,6 +78,17 @@ function App() {
     return 'black';
 }
 
+function containsObjectB(obj, list) {
+  var i;
+  for (i = 0; i < list.length; i++) {
+      if (list[i] === obj) {
+          return 'red';
+      }else{
+        // return 'black'  
+      }
+  }
+}
+
 function containsObjectA(obj, list) {
   var i;
   for (i = 0; i < list.length; i++) {
@@ -101,9 +100,8 @@ function containsObjectA(obj, list) {
 }
 
   const mostrarAsientos = (id,idf) => {
-    // console.log(asientos.map((e)=>containsObject(e.idasiento, reservas.filter((b)=>b.idfuncion==idf).map((r)=>r.idasiento))))
-    // console.log(reservas)
-    // console.log(idf)
+
+    setFuncionId(idf)
     setAsientosDisponibles(asientos.map((e)=>containsObject(e.idasiento, reservas.filter((b)=>b.idfuncion==idf).map((r)=>r.idasiento))))
     setChecked(asientos.map((e)=>containsObjectA(e.idasiento, reservas.filter((b)=>b.idfuncion==idf).map((r)=>r.idasiento))))
     setDisabled(asientos.map((e)=>containsObjectA(e.idasiento, reservas.filter((b)=>b.idfuncion==idf).map((r)=>r.idasiento))))
@@ -145,7 +143,32 @@ function containsObjectA(obj, list) {
     setAsientosDisponibles(asientosDisponibles.map((e,i)=>i==a?'blue':e))
     setDisabled(disabled.map((e,i)=>i==a?true:e))
     setAsientosSeleccionados([...asientosSeleccionados,a+1])
-    console.log(asientosSeleccionados)
+  }
+
+  const handleSubmit = async () => {
+
+    setAsientosDisponibles(asientosDisponibles.map((e,i)=>{
+      if(containsObjectA(i+1,asientosSeleccionados)){
+        return "red"
+      }else{
+        return e
+      }
+
+      }
+    ))
+    
+
+    const response = await fetch("http://localhost:3000/reservas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        funcionId,
+        asientosSeleccionados
+      }),
+    });
+
+    if (response.ok) {
+    }
   }
     return (
       <>
@@ -169,14 +192,14 @@ function containsObjectA(obj, list) {
 
           </div>
           <div style={{"display":display[i],'flexDirection':'column',justifyContent:'center',alignItems:'center'}}><h4>Asientos</h4>
-            <div style={{width:'200px',"display":"flex",'justifyContent':'space-between',alignItems:'center'}}>
-              <div>
+            <div style={{display:'flex'}}>
+              <div style={{border:'2px solid grey',borderRadius:'20px',boxShadow:'5px 5px 5px grey', display:"flex",'flexDirection':'column',justifyContent:'center',alignItems:'center'}}>
                 <h4>Sala 1</h4>
                 <h5>Pantalla</h5>
-                <div style={{display:'flex'}}>
-                  <table>
+                <div >
+                  <table >
                     <tr>
-                        <th>c</th>
+                        <th></th>
                         <th>1</th>
                         <th>2</th>
                         <th>3</th>
@@ -185,33 +208,33 @@ function containsObjectA(obj, list) {
                     </tr>
                     <tr><td>A</td>
                         {asientos.map((e,i)=>{if(e.sala==1&&e.idasiento<6)return<td style={{color:asientosDisponibles[e.idasiento-1]}} key={e.idasiento}>
-                          {e.idasiento}
+                          {/* {e.idasiento} */}
                           <input type='button' onClick={()=>handleCheckbox(e.idasiento-1)} disabled={disabled[e.idasiento-1]} style={{background:asientosDisponibles[e.idasiento-1]}}></input>
                         </td>})}
                     </tr>
                     <tr><td>B</td>
                         {asientos.map((e,i)=>{if(e.sala==1&&e.idasiento>5&&e.idasiento<11)return<td style={{color:asientosDisponibles[e.idasiento-1]}} key={e.idasiento}>
-                          {e.idasiento}
+                          {/* {e.idasiento} */}
                           <input type='button' onClick={()=>handleCheckbox(e.idasiento-1)} disabled={disabled[e.idasiento-1]} style={{background:asientosDisponibles[e.idasiento-1]}}></input>
                         </td>})}
                     </tr>
                     <tr><td>C</td>
                         {asientos.map((e,i)=>{if(e.sala==1&&e.idasiento>10&&e.idasiento<16)return<td style={{color:asientosDisponibles[e.idasiento-1]}} key={e.idasiento}>
-                          {e.idasiento}
+                          {/* {e.idasiento} */}
                           <input type='button' onClick={()=>handleCheckbox(e.idasiento-1)} disabled={disabled[e.idasiento-1]} style={{background:asientosDisponibles[e.idasiento-1]}}></input>
                         </td>})}
                     </tr>
                 </table>
                 </div>
               </div>
-              <div>
+              <div style={{border:'2px solid grey',borderRadius:'20px',boxShadow:'5px 5px 5px grey', display:"flex",'flexDirection':'column',justifyContent:'center',alignItems:'center'}}>
                 <h4>Sala 2</h4>
                 <h5>Pantalla</h5>
                 <div style={{display:'flex'}}>
                   
                   <table>
                     <tr>
-                        <th>c</th>
+                        <th></th>
                         <th>1</th>
                         <th>2</th>
                         <th>3</th>
@@ -221,21 +244,21 @@ function containsObjectA(obj, list) {
                     <tr>
                       <td>A</td>
                         {asientos.map((e,i)=>{if(e.sala==2&&e.idasiento>15&&e.idasiento<21)return<td style={{color:asientosDisponibles[e.idasiento-1]}} key={e.idasiento}>
-                          {e.idasiento}
+                          {/* {e.idasiento} */}
                           <input type='button' onClick={()=>handleCheckbox(e.idasiento-1)} disabled={disabled[e.idasiento-1]} style={{background:asientosDisponibles[e.idasiento-1]}}></input>
                         </td>})}
                     </tr>
                     <tr>
                       <td>B</td>
                         {asientos.map((e,i)=>{if(e.sala==2&&e.idasiento>20&&e.idasiento<26)return<td style={{color:asientosDisponibles[e.idasiento-1]}} key={e.idasiento}>
-                          {e.idasiento}                     
+                          {/* {e.idasiento}                      */}
                           <input type='button' onClick={()=>handleCheckbox(e.idasiento-1)} disabled={disabled[e.idasiento-1]} style={{background:asientosDisponibles[e.idasiento-1]}}></input>
                         </td>})}
                     </tr>
                     <tr>
                       <td>C</td>
                         {asientos.map((e,i)=>{if(e.sala==2&&e.idasiento>25&&e.idasiento<31)return<td style={{color:asientosDisponibles[e.idasiento-1]}} key={e.idasiento}>
-                          {e.idasiento}
+                          {/* {e.idasiento} */}
                           <input type='button' onClick={()=>handleCheckbox(e.idasiento-1)} disabled={disabled[e.idasiento-1]} style={{background:asientosDisponibles[e.idasiento-1]}}></input>
                         </td>})}
                     </tr>
@@ -249,7 +272,7 @@ function containsObjectA(obj, list) {
         ))}
       </ul> 
       {/* <button onClick={()=>setMarcada(false)}>Limpiar selección</button> */}
-      <button>Reservar</button>
+      <button onClick={()=>handleSubmit()}>Reservar</button>
       
       <Link to="/PaginaSeleccion">
         <button>Volver</button>
