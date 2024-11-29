@@ -34,6 +34,8 @@ router.post(
             return
         }
 
+        console.log(usuarios);
+
         const passwordComparada = await bcrypt.compare(
             password,
             usuarios[0].password
@@ -44,7 +46,7 @@ router.post(
             return
         }
 
-        const payload = { username, rol: "admin", dato: 123 };
+        const payload = {username, rol: "admin", dato: 123 };
         const token = jwt.sign(payload, process.env.JWT_SECRET, {
           expiresIn: "2h",
         });
